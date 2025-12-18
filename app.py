@@ -165,8 +165,8 @@ def render_footer():
         st.markdown("""<style>.terminal-footer {position: fixed;bottom: 0;left: 0;width: 100%;background-color: #0e1117;border-top: 1px solid #303030;z-index: 999;padding: 10px;max-height: 300px;overflow-y: auto;}</style>""", unsafe_allow_html=True)
         if exec_manager.full_logs:
             state_icon = "🟢 Running..." if exec_manager.is_running else "🔴 Stopped"
-            with st.expander(f"📟 Terminal Output ({state_icon})", expanded=False):
-                st.code(exec_manager.full_logs, language="bash")
+            with st.expander(f"📟 Terminal Output ({state_icon})", expanded=True):
+                st.code(exec_manager.full_logs, language="bash", height=300)
                 if exec_manager.is_running:
                     time.sleep(1); st.rerun()
 
@@ -174,22 +174,26 @@ def render_footer():
 def page_execution_run():
     st.header("🚀 Execution Run")
     st.subheader("1. Project Location")
-    col1, col2, col3 = st.columns([1, 4, 1])
+    col1, col2, col3, col4 = st.columns([1, 4, 1, 2])
     with col1:
-        if st.button("📂 Select"):
+        if st.button("Select Project 📂"):
             s = select_folder()
             if s: st.session_state.proj_path = s; st.rerun()
     with col2:
         project_path_input = st.text_input("Path", value=st.session_state.proj_path, label_visibility="collapsed")
     with col3:
-        if st.button("Scan"):
+        if st.button("Scan", icon="🔍"):
             d, c, t = scan_project(project_path_input)
             if d:
                 st.session_state.features_data = d
                 st.session_state.caps_files = c
                 st.session_state.unique_tags = t
                 st.session_state.scan_done = True
-                st.success(f"Found {len(d)} Features")
+                st.toast("Scan Complete", icon="✅")
+                with st.spinner("Processing..."):
+                    time.sleep(1) # Brief pause for UX
+                with col4:
+                            st.text(f"Features Found \n {len(d)} ", text_alignment="center")
 
     if st.session_state.scan_done:
         st.divider()
@@ -206,7 +210,7 @@ def page_execution_run():
         selected_tags = st.multiselect("Filter Tags", st.session_state.unique_tags)
         st.write("--- OR Select Features ---")
         selected_feature_paths = []
-        with st.container(border=True):
+        with st.container(border=True, height=400):
             for feat in st.session_state.features_data:
                 chk_key = f"chk_{feat['filename']}"
                 path_rel = os.path.relpath(feat['path'], project_path_input)
