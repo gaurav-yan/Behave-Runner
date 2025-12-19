@@ -73,20 +73,11 @@ def scan_steps(project_path):
     Returns a dict: { 'filename': [list of step strings] }
     """
     steps_path = os.path.join(project_path, "features", "steps", "*.py")
-    # Behave often puts steps in features/steps, but let's check recursively just in case
-    # or just root 'steps' depending on structure. Let's assume features/steps as per standard Behave
-    # If not found there, try project_root/steps
     files = glob.glob(steps_path)
     if not files:
-         # Try project root steps
          files = glob.glob(os.path.join(project_path, "steps", "*.py"))
 
     steps_data = {}
-    
-    # Regex to capture @given('text'), @when("text"), etc.
-    # Matches: @given, @when, @then, @step
-    # Capture group 2 is the step text inside quotes
-    # Handles both ' and "
     step_pattern = re.compile(r"^\s*@(given|when|then|step)\s*\(\s*['\"](.*)['\"]\s*\)")
 
     for f_path in files:
@@ -97,7 +88,7 @@ def scan_steps(project_path):
                 for line in f:
                     match = step_pattern.search(line)
                     if match:
-                        keyword = match.group(1).title() # Given, When...
+                        keyword = match.group(1).title() 
                         text = match.group(2)
                         found_steps.append(f"**{keyword}** {text}")
         except Exception as e:
@@ -132,7 +123,6 @@ def install_package(pkg, output_container=None):
     Installs a package and streams output to a Streamlit container if provided.
     """
     try:
-        # We use a Popen process to capture stdout line by line
         process = subprocess.Popen(
             [sys.executable, "-m", "pip", "install", pkg],
             stdout=subprocess.PIPE,
@@ -160,23 +150,49 @@ def install_package(pkg, output_container=None):
 
 # --- 3. Persistent Footer Logic ---
 def render_footer():
+    """Renders the persistent terminal footer with auto-scroll and fixed height."""
     new_logs = exec_manager.get_new_logs()
+    
     with st.container():
-        st.markdown("""<style>.terminal-footer {position: fixed;bottom: 0;left: 0;width: 100%;background-color: #0e1117;border-top: 1px solid #303030;z-index: 999;padding: 10px;max-height: 300px;overflow-y: auto;}</style>""", unsafe_allow_html=True)
+        st.markdown("""
+            <style>
+            .terminal-footer {
+                position: fixed; bottom: 0; left: 0; width: 100%;
+                background-color: #0e1117; border-top: 1px solid #303030;
+                z-index: 9999; padding: 10px;
+            }
+            .terminal-footer div[data-testid="stExpander"] div[data-testid="stCodeBlock"] pre {
+                max-height: 250px !important; overflow-y: auto !important;
+                white-space: pre-wrap !important; display: flex; flex-direction: column-reverse;
+            }
+            </style>
+            """, unsafe_allow_html=True)
+
         if exec_manager.full_logs:
             state_icon = "🟢 Running..." if exec_manager.is_running else "🔴 Stopped"
+            st.markdown('<div class="terminal-footer">', unsafe_allow_html=True)
             with st.expander(f"📟 Terminal Output ({state_icon})", expanded=True):
                 st.code(exec_manager.full_logs, language="bash", height=300)
+                st.markdown("""
+                    <script>
+                        const codeBlocks = window.parent.document.querySelectorAll('.terminal-footer div[data-testid="stCodeBlock"] pre');
+                        if (codeBlocks.length > 0) {
+                             const terminal = codeBlocks[codeBlocks.length - 1];
+                             terminal.scrollBottom = terminal.scrollHeight;
+                        }
+                    </script>
+                    """, unsafe_allow_html=True)
                 if exec_manager.is_running:
                     time.sleep(1); st.rerun()
+            st.markdown('</div>', unsafe_allow_html=True)
 
 # --- 4. Page Definitions ---
 def page_execution_run():
     st.header("🚀 Execution Run")
     st.subheader("1. Project Location")
-    col1, col2, col3, col4 = st.columns([1, 4, 1, 2])
+    col1, col2, col3, col4 = st.columns([1, 4, 1, 1])
     with col1:
-        if st.button("Select Project 📂"):
+        if st.button("Select", icon="📂"):
             s = select_folder()
             if s: st.session_state.proj_path = s; st.rerun()
     with col2:
@@ -190,10 +206,12 @@ def page_execution_run():
                 st.session_state.unique_tags = t
                 st.session_state.scan_done = True
                 st.toast("Scan Complete", icon="✅")
-                with st.spinner("Processing..."):
-                    time.sleep(1) # Brief pause for UX
-                with col4:
-                            st.text(f"Features Found \n {len(d)} ", text_alignment="center")
+                with st.spinner("Scanning..."):
+                    time.sleep(1)
+                st.success("Scan Complete!")
+                st.rerun()
+        with col4:
+                st.text(f"Features Found \n {len(st.session_state.features_data)}", text_alignment="center")
 
     if st.session_state.scan_done:
         st.divider()
@@ -218,7 +236,7 @@ def page_execution_run():
                 col_chk, col_exp = st.columns([0.8, 0.2])
                 with col_chk:
                     if st.checkbox(label, key=chk_key, help=path_rel): selected_feature_paths.append(path_rel)
-                with col_exp: # Read-only Scenario List
+                with col_exp:
                     with st.popover("Scenarios"):
                          if feat['scenarios']: 
                             for s in feat['scenarios']: st.markdown(f"- {s}")
@@ -226,36 +244,38 @@ def page_execution_run():
 
         st.divider()
         st.subheader("4. Execution")
-        if st.button("▶ Run Tests", type="primary"):
-            if not selected_caps: st.error("Select Caps file.")
-            elif not selected_feature_paths and not selected_tags: st.warning("Select features or tags.")
-            else:
-                tags_arg = f"--tags={','.join(selected_tags)} " if selected_tags else ""
-                features_arg = " ".join(f"\"{p}\"" for p in selected_feature_paths) if selected_feature_paths else ""
-                cmd = f"behave --no-logcapture -D property_file=configs/config.properties -D endpoint_file=endpoints.json -D caps_file={selected_caps} {tags_arg}--no-capture --no-capture-stderr --no-color -f allure_behave.formatter:AllureFormatter -o allure-results {features_arg}"
-                if exec_manager.start_execution(cmd, project_path_input, os.environ.copy()):
-                    st.toast("Started!", icon="🚀"); st.rerun()
-                else: st.warning("Busy.")
+        
+        # --- Run / Stop Logic ---
+        if exec_manager.is_running:
+            if st.button("⏹️ Stop Execution", type="primary"):
+                if exec_manager.stop_execution():
+                    st.warning("Stopped by user.")
+                    time.sleep(1); st.rerun()
+                else: st.error("Stop failed.")
+        else:
+            if st.button("▶ Run Tests", type="primary"):
+                if not selected_caps: st.error("Select Caps file.")
+                elif not selected_feature_paths and not selected_tags: st.warning("Select features or tags.")
+                else:
+                    tags_arg = f"--tags={','.join(selected_tags)} " if selected_tags else ""
+                    features_arg = " ".join(f"\"{p}\"" for p in selected_feature_paths) if selected_feature_paths else ""
+                    cmd = f"behave --no-logcapture -D property_file=configs/config.properties -D endpoint_file=endpoints.json -D caps_file={selected_caps} {tags_arg}--no-capture --no-capture-stderr --no-color -f allure_behave.formatter:AllureFormatter -o allure-results {features_arg}"
+                    if exec_manager.start_execution(cmd, project_path_input, os.environ.copy()):
+                        st.toast("Started!", icon="🚀"); st.rerun()
+                    else: st.warning("Busy.")
 
 def page_steps_viewer():
     st.header("👣 Step Definitions Viewer")
     project_path = st.session_state.get("proj_path", os.getcwd())
-    
-    # 1. Scan for Steps
     steps_data = scan_steps(project_path)
-    
     if not steps_data:
-        st.warning(f"No step definition files found in `{os.path.join(project_path, 'features', 'steps')}` or `{os.path.join(project_path, 'steps')}`.")
+        st.warning("No step files found.")
         return
-
-    st.success(f"Found {len(steps_data)} Step Definition Files.")
+    st.success(f"Found {len(steps_data)} Step Files.")
     st.divider()
-
-    # 2. Display Collapsible Lists
     for filename, steps in steps_data.items():
         with st.expander(f"📄 {filename} ({len(steps)} steps)"):
-            for step in steps:
-                st.markdown(f"- {step}")
+            for step in steps: st.markdown(f"- {step}")
 
 def page_requirements():
     st.header("📦 Requirements")
@@ -264,113 +284,74 @@ def page_requirements():
     
     st.subheader("System Tools")
     allure_path = get_allure_path()
-    if allure_path: 
-        st.success(f"Allure: `{allure_path}`")
-    else: 
-        st.error("Allure Not Found")
+    if allure_path: st.success(f"Allure: `{allure_path}`")
+    else: st.error("Allure Not Found")
 
     st.subheader("Python Dependencies")
     if os.path.exists(req_file):
         with open(req_file, 'r') as f:
             lines = f.readlines()
-            
         for line in lines:
             line = line.strip()
             if not line or line.startswith("#"): continue
-            
-            # Extract package name for version check
             pkg = re.split(r'[=<>!]', line)[0].strip()
             ver = get_installed_version(pkg)
-            
-            # Layout: Requirement | Status | Install Button
             c1, c2, c3 = st.columns([3, 2, 2])
-            
-            with c1: 
-                st.code(line, language="text")
-            with c2: 
-                if ver:
-                    st.success(f"Installed: {ver}")
-                else:
-                    st.warning("Missing")
+            with c1: st.code(line, language="text")
+            with c2: st.write(f"Installed: {ver}" if ver else "Missing")
             with c3:
                 if not ver:
                     if st.button("Install", key=f"install_{pkg}"):
-                        # Use st.status to show a spinner and expandable logs
                         with st.status(f"Installing {pkg}...", expanded=True) as status:
-                            st.write("Running pip install...")
-                            # Create an empty placeholder for streaming logs
                             log_box = st.empty()
-                            
                             ok, msg = install_package(line, output_container=log_box)
-                            
                             if ok:
                                 status.update(label=f"✅ {pkg} Installed!", state="complete", expanded=False)
-                                time.sleep(1) # Brief pause to see success
-                                st.rerun()
+                                time.sleep(1); st.rerun()
                             else:
-                                status.update(label=f"❌ Failed to install {pkg}", state="error", expanded=True)
+                                status.update(label=f"❌ Failed {pkg}", state="error", expanded=True)
                                 st.error(msg)
-    else: 
-        st.warning("No requirements.txt found.")
+    else: st.warning("No requirements.txt found.")
 
 def page_allure_results():
-    st.header("📊 Allure Results")
+    st.header("📊 Results")
     project_path = st.session_state.get("proj_path", os.getcwd())
     allure_dir = os.path.join(project_path, "allure-results")
     allure_cmd = get_allure_path()
-
-    if not allure_cmd:
-        st.error("⚠️ 'allure' executable not found in PATH.")
     
     if os.path.exists(allure_dir):
         stats = parse_allure_results(allure_dir)
-        if stats and stats['Total'] > 0:
+        if stats and stats['Total']>0:
             m1, m2, m3, m4 = st.columns(4)
             m1.metric("Total", stats['Total'])
             m2.metric("Passed", stats['Passed'])
             m3.metric("Failed", stats['Failed'])
-            m4.metric("Other", stats['Broken'] + stats['Skipped'])
-            st.divider()
+            m4.metric("Other", stats['Broken']+stats['Skipped'])
             if st.button("🌐 Open Report"):
-                if allure_cmd:
-                    subprocess.Popen([allure_cmd, "serve", allure_dir], cwd=project_path, env=os.environ.copy())
-                    st.toast("Report opening...", icon="🚀")
-                else:
-                    st.error("Allure command not found.")
-            
+                if allure_cmd: subprocess.Popen([allure_cmd, "serve", allure_dir], cwd=project_path, env=os.environ.copy())
+                else: st.error("Allure missing.")
             results_list = []
             for jf in glob.glob(os.path.join(allure_dir, "*-result.json")):
                 try:
-                    with open(jf, 'r') as f:
-                        d = json.load(f)
+                    with open(jf,'r') as f:
+                        d=json.load(f)
                         results_list.append({"Test": d.get("name"), "Status": d.get("status")})
                 except: pass
-            if results_list:
-                st.dataframe(pd.DataFrame(results_list), use_container_width=True)
-        else:
-            st.warning("No results found.")
-    else:
-        st.error(f"Directory not found: {allure_dir}")
+            if results_list: st.dataframe(pd.DataFrame(results_list), use_container_width=True)
+        else: st.warning("No results.")
+    else: st.error("No allure-results folder.")
 
 # --- 5. Navigation & Footer ---
-
-# 1. Setup Navigation
 pg = st.navigation({
     "Test Automation": [
-        st.Page(page_execution_run, title="Test Execution", icon="🚀"),
+        st.Page(page_execution_run, title="Current Execution Run", icon="🚀"),
         st.Page(page_steps_viewer, title="Step Definitions", icon="👣"),
         st.Page(page_requirements, title="Verify Requirements", icon="📦"),
         st.Page(page_allure_results, title="View Allure Results", icon="📊"),
     ]
 })
 
-# 2. Add Persistent Sidebar Title/Logo
 st.sidebar.title("🦄 Behave Runner")
-st.sidebar.markdown("---") # Visual separator
-
-# 3. Run the selected page
+st.sidebar.markdown("---")
 pg.run()
-
-# 4. Render Footer (Always last)
 render_footer()
-

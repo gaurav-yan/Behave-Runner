@@ -2,6 +2,8 @@ import threading
 import subprocess
 import queue
 import os
+import signal
+import sys
 
 class ExecutionManager:
     _instance = None
@@ -18,13 +20,16 @@ class ExecutionManager:
 
     def start_execution(self, command, cwd, env):
         if self.is_running:
-            return False # Already running
+            return False
 
         self.full_logs = f"### Starting Execution...\n$ {command}\n"
         self.is_running = True
         
         def run_proc():
             try:
+                # On Unix, setsid creates a new process group so we can kill the whole group
+                preexec = os.setsid if os.name == 'posix' else None
+                
                 self.process = subprocess.Popen(
                     command,
                     cwd=cwd,
@@ -34,7 +39,8 @@ class ExecutionManager:
                     text=True,
                     bufsize=1,
                     universal_newlines=True,
-                    env=env
+                    env=env,
+                    preexec_fn=preexec
                 )
                 
                 for line in self.process.stdout:
@@ -42,6 +48,8 @@ class ExecutionManager:
                     self.full_logs += line
                 
                 self.process.wait()
+            except Exception as e:
+                self.full_logs += f"\n[ERROR] Process Exception: {e}\n"
             finally:
                 self.is_running = False
                 self.process = None
@@ -50,8 +58,27 @@ class ExecutionManager:
         self.thread.start()
         return True
 
+    def stop_execution(self):
+        """Terminates the running process tree."""
+        if self.process and self.is_running:
+            try:
+                self.full_logs += "\n[INFO] Stopping execution...\n"
+                
+                if os.name == 'nt': # Windows
+                    # /F = Force, /T = Tree (kill children like behave.exe)
+                    subprocess.call(['taskkill', '/F', '/T', '/PID', str(self.process.pid)])
+                else: # Linux/Mac
+                    # Kill the process group
+                    os.killpg(os.getpgid(self.process.pid), signal.SIGTERM)
+                
+                self.is_running = False
+                return True
+            except Exception as e:
+                self.full_logs += f"\n[ERROR] Failed to stop: {e}\n"
+                return False
+        return False
+
     def get_new_logs(self):
-        """Retrieves new lines from the queue without blocking."""
         new_lines = ""
         while not self.output_queue.empty():
             try:
