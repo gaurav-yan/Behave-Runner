@@ -1,4 +1,8 @@
 streamlit
 pandas
-allure-behave
 behave
+allure-behave
+requests
+selenium
+Appium-Python-Client
+psutil
