@@ -147,6 +147,41 @@ def install_package(pkg, output_container=None):
             
     except Exception as e:
         return False, str(e)
+    
+# Required environment variables for this project
+REQUIRED_ENV_VARS = [
+    "LAMBDA_USER_NAME",
+    "LAMBDA_APIKEY",
+    "ENCRYPT_KEY",
+    "ESAM_QA_APIKEY",
+]
+
+def load_env_file(env_path):
+    """Return (env_dict, invalid_lines). Values are raw; caller decides masking."""
+    env_vars = {}
+    invalid_lines = []
+    if not os.path.exists(env_path):
+        return env_vars, invalid_lines
+
+    with open(env_path, "r", encoding="utf-8") as f:
+        for line_num, line in enumerate(f, 1):
+            line = line.strip()
+            if not line or line.startswith("#"):
+                continue
+            if "=" in line:
+                key, val = line.split("=", 1)
+                env_vars[key.strip()] = val.strip()
+            else:
+                invalid_lines.append(f"Line {line_num}: {line}")
+    return env_vars, invalid_lines
+
+def save_env_file(env_path, env_dict):
+    """Write env_dict to .env in KEY=VALUE format."""
+    lines = [f"{k}={v}" for k, v in env_dict.items()]
+    with open(env_path, "w", encoding="utf-8") as f:
+        f.write("\n".join(lines) + "\n")
+
+
 
 # --- 3. Persistent Footer Logic ---
 def render_footer():
@@ -185,6 +220,20 @@ def render_footer():
                 if exec_manager.is_running:
                     time.sleep(1); st.rerun()
             st.markdown('</div>', unsafe_allow_html=True)
+
+def reset_execution_filters():
+    """Callback to reset all filters in the Execution Run page."""
+    # 1. Reset the search box
+    st.session_state.feature_search = ""
+    
+    # 2. Reset the tag multiselect
+    st.session_state.selected_tags = []
+    
+    # 3. Uncheck all feature checkboxes
+    # We look for all keys starting with 'chk_' and set them to False
+    for key in st.session_state.keys():
+        if key.startswith("chk_"):
+            st.session_state[key] = False
 
 # --- 4. Page Definitions ---
 def page_execution_run():
@@ -225,22 +274,59 @@ def page_execution_run():
 
         st.divider()
         st.subheader("3. Select Scope")
-        selected_tags = st.multiselect("Filter Tags", st.session_state.unique_tags)
+        col_scope_title, col_reset = st.columns([4, 1])
+        with col_reset:
+            st.button("🔄 Reset Scope", on_click=reset_execution_filters, use_container_width=True)
+
+        # 1. Tags Multiselect (with Key)
+        selected_tags = st.multiselect(
+            "Filter by Tags:", 
+            options=st.session_state.unique_tags,
+            key="selected_tags" # <--- Added key for reset
+        )
+        
         st.write("--- OR Select Features ---")
-        selected_feature_paths = []
-        with st.container(border=True, height=400):
+
+        # 2. Search Input (with Key)
+        search_query = st.text_input(
+            "🔍 Search Features", 
+            key="feature_search", # <--- Added key for reset
+            placeholder="Search by name, filename, or tag..."
+        ).lower()
+        
+        # Filter logic (same as before)
+        filtered_features = []
+        if search_query:
             for feat in st.session_state.features_data:
+                in_name = search_query in feat['feature_name'].lower()
+                in_file = search_query in feat['filename'].lower()
+                in_tags = any(search_query in t.lower() for t in feat['tags'])
+                if in_name or in_file or in_tags:
+                    filtered_features.append(feat)
+        else:
+            filtered_features = st.session_state.features_data
+
+        # 3. Feature Selection List
+        selected_feature_paths = []
+        with st.container(border=True):
+            if not filtered_features:
+                st.info("No features match your search.")
+            
+            for feat in filtered_features:
+                # IMPORTANT: Use 'chk_' prefix as expected by the reset callback
                 chk_key = f"chk_{feat['filename']}"
                 path_rel = os.path.relpath(feat['path'], project_path_input)
                 label = f"**{feat['feature_name']}**"
+                
                 col_chk, col_exp = st.columns([0.8, 0.2])
                 with col_chk:
-                    if st.checkbox(label, key=chk_key, help=path_rel): selected_feature_paths.append(path_rel)
+                    # Checkbox now uses the persistent chk_key
+                    if st.checkbox(label, key=chk_key, help=path_rel): 
+                        selected_feature_paths.append(path_rel)
                 with col_exp:
                     with st.popover("Scenarios"):
                          if feat['scenarios']: 
                             for s in feat['scenarios']: st.markdown(f"- {s}")
-                         else: st.write("No scenarios.")
 
         st.divider()
         st.subheader("4. Execution")
@@ -278,27 +364,136 @@ def page_steps_viewer():
             for step in steps: st.markdown(f"- {step}")
 
 def page_requirements():
-    st.header("📦 Requirements")
+    st.header("📦 Requirements Verification")
     project_path = st.session_state.get("proj_path", os.getcwd())
     req_file = os.path.join(project_path, "requirements.txt")
-    
-    st.subheader("System Tools")
-    allure_path = get_allure_path()
-    if allure_path: st.success(f"Allure: `{allure_path}`")
-    else: st.error("Allure Not Found")
+    env_file = os.path.join(project_path, ".env")
 
-    st.subheader("Python Dependencies")
+    # --- 1. System Tools ---
+    st.subheader("1. System Tools")
+    allure_path = get_allure_path()
+    if allure_path:
+        st.success(f"Allure: `{allure_path}`")
+    else:
+        st.error("Allure Not Found")
+
+    st.divider()
+
+    # --- 2. .env Verification ---
+    st.subheader("2. Environment Variables (.env)")
+    env_vars, invalid_lines = load_env_file(env_file)
+    missing_required = [k for k in REQUIRED_ENV_VARS if not env_vars.get(k)]
+
+    if os.path.exists(env_file):
+        if not missing_required and not invalid_lines:
+            st.success(f"`.env` found at `{env_file}` and all required variables are set.")
+        else:
+            st.warning(f"`.env` found at `{env_file}` but some required variables are missing or invalid lines exist.")
+    else:
+        st.error("`.env` file not found in project root.")
+
+    # Show current variables (masked)
+    if env_vars:
+        with st.expander("Current .env variables (values masked)"):
+            for key, val in env_vars.items():
+                masked = ("*" * len(val)) if len(val) <= 4 else (val[:2] + "*" * (len(val) - 2))
+                st.code(f"{key}={masked}", language="bash")
+    else:
+        st.info("No variables loaded. Use the editor below to create `.env`.")
+
+    if invalid_lines:
+        with st.expander("⚠ Invalid lines in .env"):
+            for l in invalid_lines:
+                st.warning(l)
+
+    # --- 2.1 .env Editor "Popup" ---
+    if "show_env_editor" not in st.session_state:
+        st.session_state.show_env_editor = False
+
+    if st.button("➕ Create / Update .env"):
+        st.session_state.show_env_editor = True
+
+    if st.session_state.show_env_editor:
+        st.markdown("### Edit .env variables")
+        st.info("Required: LAMBDA_USER_NAME, LAMBDA_APIKEY, ENCRYPT_KEY, ESAM_QA_APIKEY")
+
+        updated_env = dict(env_vars)
+
+        # Required variables
+        for key in REQUIRED_ENV_VARS:
+            current_val = updated_env.get(key, "")
+            updated_env[key] = st.text_input(
+                key,
+                value=current_val,
+                type="password" if "KEY" in key or "API" in key else "default"
+            )
+
+        st.markdown("---")
+        st.write("Optional custom variables (key=value, one per line):")
+
+        # Build current custom vars text
+        custom_pairs = [f"{k}={v}" for k, v in updated_env.items() if k not in REQUIRED_ENV_VARS]
+        custom_text_default = "\n".join(custom_pairs)
+        custom_text = st.text_area(
+            "Custom variables",
+            value=custom_text_default,
+            placeholder="MY_VAR=my_value\nANOTHER_VAR=another_value",
+            height=120,
+        )
+
+        # Parse custom vars
+        custom_dict = {}
+        for line in custom_text.splitlines():
+            line = line.strip()
+            if not line or line.startswith("#"):
+                continue
+            if "=" in line:
+                ck, cv = line.split("=", 1)
+                custom_dict[ck.strip()] = cv.strip()
+
+        # Merge final env
+        final_env = {}
+        for k in REQUIRED_ENV_VARS:
+            if updated_env.get(k):
+                final_env[k] = updated_env[k]
+        final_env.update(custom_dict)
+
+        c_ok, c_cancel = st.columns(2)
+        with c_ok:
+            if st.button("💾 Save .env", type="primary"):
+                missing_now = [k for k in REQUIRED_ENV_VARS if not final_env.get(k)]
+                if missing_now:
+                    st.error(f"Missing required variables: {', '.join(missing_now)}")
+                else:
+                    try:
+                        save_env_file(env_file, final_env)
+                        st.success(f".env saved to {env_file}")
+                        st.session_state.show_env_editor = False
+                        st.rerun()
+                    except Exception as e:
+                        st.error(f"Failed to save .env: {e}")
+        with c_cancel:
+            if st.button("Cancel"):
+                st.session_state.show_env_editor = False
+
+    st.divider()
+
+    # --- 3. Python Dependencies ---
+    st.subheader("3. Python Dependencies")
     if os.path.exists(req_file):
-        with open(req_file, 'r') as f:
+        with open(req_file, 'r', encoding="utf-8") as f:
             lines = f.readlines()
         for line in lines:
             line = line.strip()
-            if not line or line.startswith("#"): continue
+            if not line or line.startswith("#"):
+                continue
             pkg = re.split(r'[=<>!]', line)[0].strip()
             ver = get_installed_version(pkg)
             c1, c2, c3 = st.columns([3, 2, 2])
-            with c1: st.code(line, language="text")
-            with c2: st.write(f"Installed: {ver}" if ver else "Missing")
+            with c1:
+                st.code(line, language="text")
+            with c2:
+                st.write(f"Installed: {ver}" if ver else "Missing")
             with c3:
                 if not ver:
                     if st.button("Install", key=f"install_{pkg}"):
@@ -307,11 +502,15 @@ def page_requirements():
                             ok, msg = install_package(line, output_container=log_box)
                             if ok:
                                 status.update(label=f"✅ {pkg} Installed!", state="complete", expanded=False)
-                                time.sleep(1); st.rerun()
+                                time.sleep(1)
+                                st.rerun()
                             else:
                                 status.update(label=f"❌ Failed {pkg}", state="error", expanded=True)
                                 st.error(msg)
-    else: st.warning("No requirements.txt found.")
+    else:
+        st.warning("No requirements.txt found.")
+
+
 
 def page_allure_results():
     st.header("📊 Results")
@@ -328,7 +527,15 @@ def page_allure_results():
             m3.metric("Failed", stats['Failed'])
             m4.metric("Other", stats['Broken']+stats['Skipped'])
             if st.button("🌐 Open Report"):
-                if allure_cmd: subprocess.Popen([allure_cmd, "serve", allure_dir], cwd=project_path, env=os.environ.copy())
+                if allure_cmd: 
+                    if os.getenv("STREAMLIT_SHARING_MODE"):
+                        st.warning("Allure Serve is not supported in Cloud mode. Please download the 'allure-results' folder and run 'allure serve' locally.")
+                    else:
+                        with st.spinner("Opening Allure Report..."):
+                            time.sleep(1)
+                        subprocess.Popen([allure_cmd, "serve", allure_dir], cwd=project_path, env=os.environ.copy())
+                        st.success("Allure Report Opened!")
+                        st.rerun()
                 else: st.error("Allure missing.")
             results_list = []
             for jf in glob.glob(os.path.join(allure_dir, "*-result.json")):
