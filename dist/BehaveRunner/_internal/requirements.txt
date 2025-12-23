@@ -1,0 +1,8 @@
+streamlit
+pandas
+behave
+allure-behave
+requests
+selenium
+Appium-Python-Client
+psutil
