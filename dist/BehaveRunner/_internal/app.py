@@ -318,7 +318,7 @@ def page_execution_run():
 
         # 3. Feature Selection List
         selected_feature_paths = []
-        with st.container(border=True):
+        with st.container(height=400):
             if not filtered_features:
                 st.info("No features match your search.")
             
@@ -328,7 +328,7 @@ def page_execution_run():
                 path_rel = os.path.relpath(feat['path'], project_path_input)
                 label = f"**{feat['feature_name']}**"
                 
-                col_chk, col_exp = st.columns([0.8, 0.2])
+                col_chk, col_exp = st.columns([0.8, 0.2], gap=None, vertical_alignment='center')
                 with col_chk:
                     # Checkbox now uses the persistent chk_key
                     if st.checkbox(label, key=chk_key, help=path_rel): 
@@ -337,6 +337,7 @@ def page_execution_run():
                     with st.popover("Scenarios"):
                          if feat['scenarios']: 
                             for s in feat['scenarios']: st.markdown(f"- {s}")
+                st.divider()
 
         st.divider()
         st.subheader("4. Execution")

@@ -1,0 +1,138 @@
+198 INFO: PyInstaller: 6.17.0, contrib hooks: 2025.10
+199 INFO: Python: 3.13.5
+228 INFO: Platform: Windows-11-10.0.26200-SP0
+228 INFO: Python environment: C:\Python313
+231 INFO: Removing temporary files and cleaning cache in C:\Users\PLAPA-22\AppData\Local\pyinstaller
+472 INFO: Module search paths (PYTHONPATH):
+['C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\Scripts\\pyinstaller.exe',
+ 'C:\\Python313\\python313.zip',
+ 'C:\\Python313\\DLLs',
+ 'C:\\Python313\\Lib',
+ 'C:\\Python313',
+ 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages',
+ 'C:\\Python313\\Lib\\site-packages',
+ 'D:\\Gaurave_07.08.2025\\Gaurav\\Automation\\Behave-Runner']
+871 INFO: Appending 'datas' from .spec
+881 INFO: checking Analysis
+881 INFO: Building Analysis because Analysis-00.toc is non existent
+881 INFO: Looking for Python shared library...
+881 INFO: Using Python shared library: C:\Python313\python313.dll
+881 INFO: Running Analysis Analysis-00.toc
+881 INFO: Target bytecode optimization level: 0
+881 INFO: Initializing module dependency graph...
+882 INFO: Initializing module graph hook caches...
+895 INFO: Analyzing modules for base_library.zip ...
+2326 INFO: Processing standard module hook 'hook-encodings.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\PyInstaller\\hooks'
+4799 INFO: Processing standard module hook 'hook-pickle.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\PyInstaller\\hooks'
+6106 INFO: Processing standard module hook 'hook-heapq.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\PyInstaller\\hooks'
+6673 INFO: Caching module dependency graph...
+6720 INFO: Analyzing D:\Gaurave_07.08.2025\Gaurav\Automation\Behave-Runner\run_desktop.py
+7283 INFO: Processing standard module hook 'hook-platform.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\PyInstaller\\hooks'
+7315 INFO: Processing standard module hook 'hook-_ctypes.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\PyInstaller\\hooks'
+8437 INFO: Processing standard module hook 'hook-multiprocessing.util.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\PyInstaller\\hooks'
+8557 INFO: Processing standard module hook 'hook-xml.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\PyInstaller\\hooks'
+9639 INFO: Processing pre-safe-import-module hook 'hook-typing_extensions.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+9641 INFO: SetuptoolsInfo: initializing cached setuptools info...
+15469 INFO: Processing standard module hook 'hook-numpy.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\PyInstaller\\hooks'
+16376 INFO: Processing standard module hook 'hook-difflib.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\PyInstaller\\hooks'
+17186 INFO: Processing standard module hook 'hook-sysconfig.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\PyInstaller\\hooks'
+18056 INFO: Processing standard module hook 'hook-psutil.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+19816 INFO: Processing standard module hook 'hook-charset_normalizer.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+20315 INFO: Processing standard module hook 'hook-jinja2.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+21027 INFO: Processing standard module hook 'hook-altair.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+21195 INFO: Processing standard module hook 'hook-jsonschema.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+22161 INFO: Processing standard module hook 'hook-jsonschema_specifications.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+22186 INFO: Processing pre-safe-import-module hook 'hook-importlib_resources.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+22250 INFO: Processing standard module hook 'hook-urllib3.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+22797 INFO: Processing standard module hook 'hook-cryptography.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+24403 INFO: hook-cryptography: cryptography does not seem to be using dynamically linked OpenSSL.
+24870 INFO: Processing standard module hook 'hook-certifi.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+25263 INFO: Processing standard module hook 'hook-narwhals.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+25301 INFO: Processing standard module hook 'hook-pandas.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\PyInstaller\\hooks'
+27583 INFO: Processing standard module hook 'hook-pytz.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\PyInstaller\\hooks'
+29506 INFO: Processing standard module hook 'hook-pyarrow.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+30520 INFO: Processing standard module hook 'hook-fsspec.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+32182 INFO: Processing standard module hook 'hook-pandas.io.formats.style.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\PyInstaller\\hooks'
+38281 INFO: Processing standard module hook 'hook-sqlite3.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\PyInstaller\\hooks'
+38800 INFO: Processing standard module hook 'hook-pandas.io.clipboard.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\PyInstaller\\hooks'
+38919 INFO: Processing standard module hook 'hook-pandas.plotting.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\PyInstaller\\hooks'
+39915 INFO: Processing standard module hook 'hook-dateutil.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+40153 INFO: Processing pre-safe-import-module hook 'hook-six.moves.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+40782 INFO: Processing standard module hook 'hook-xml.etree.cElementTree.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\PyInstaller\\hooks'
+40809 INFO: Processing standard module hook 'hook-xml.dom.domreg.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\PyInstaller\\hooks'
+41616 INFO: Processing standard module hook 'hook-pytest.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+42524 INFO: Processing standard module hook 'hook-pygments.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\PyInstaller\\hooks'
+44885 INFO: Processing standard module hook 'hook-py.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+45215 INFO: Processing pre-safe-import-module hook 'hook-packaging.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+45495 INFO: Processing pre-safe-import-module hook 'hook-tomli.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+45496 INFO: Setuptools: 'tomli' appears to be a setuptools-vendored copy - creating alias to 'setuptools._vendor.tomli'!
+45509 INFO: Processing standard module hook 'hook-setuptools.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\PyInstaller\\hooks'
+45535 INFO: Processing pre-safe-import-module hook 'hook-distutils.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+45589 INFO: Processing pre-safe-import-module hook 'hook-jaraco.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+45590 INFO: Setuptools: 'jaraco' appears to be a full setuptools-vendored copy - creating alias to 'setuptools._vendor.jaraco'!
+45607 INFO: Processing pre-safe-import-module hook 'hook-more_itertools.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+45608 INFO: Setuptools: 'more_itertools' appears to be a setuptools-vendored copy - creating alias to 'setuptools._vendor.more_itertools'!
+46257 INFO: Processing standard module hook 'hook-setuptools._vendor.jaraco.text.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\PyInstaller\\hooks'
+46271 INFO: Processing pre-safe-import-module hook 'hook-backports.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+46272 INFO: Setuptools: 'backports' appears to be a full setuptools-vendored copy - creating alias to 'setuptools._vendor.backports'!
+46533 INFO: Processing pre-safe-import-module hook 'hook-importlib_metadata.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+46534 INFO: Setuptools: 'importlib_metadata' appears to be a setuptools-vendored copy - creating alias to 'setuptools._vendor.importlib_metadata'!
+46574 INFO: Processing standard module hook 'hook-setuptools._vendor.importlib_metadata.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\PyInstaller\\hooks'
+46576 INFO: Processing pre-safe-import-module hook 'hook-zipp.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+46577 INFO: Setuptools: 'zipp' appears to be a setuptools-vendored copy - creating alias to 'setuptools._vendor.zipp'!
+47604 INFO: Processing pre-safe-import-module hook 'hook-wheel.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+47605 INFO: Setuptools: 'wheel' appears to be a setuptools-vendored copy - creating alias to 'setuptools._vendor.wheel'!
+49481 INFO: Processing standard module hook 'hook-pkg_resources.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\PyInstaller\\hooks'
+50041 INFO: Processing pre-safe-import-module hook 'hook-platformdirs.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+50043 INFO: Setuptools: 'platformdirs' appears to be a setuptools-vendored copy - creating alias to 'setuptools._vendor.platformdirs'!
+55395 INFO: Processing standard module hook 'hook-PIL.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\PyInstaller\\hooks'
+55548 INFO: Processing standard module hook 'hook-PIL.Image.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\PyInstaller\\hooks'
+56280 INFO: Processing standard module hook 'hook-PIL.ImageFilter.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\PyInstaller\\hooks'
+59125 INFO: Processing pre-safe-import-module hook 'hook-tensorflow.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\_pyinstaller_hooks_contrib\\pre_safe_import_module'
+60572 INFO: Processing standard module hook 'hook-pycparser.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+64891 INFO: Analyzing hidden import 'behave'
+66265 INFO: Analyzing hidden import 'execution_manager'
+66273 INFO: Analyzing hidden import 'pwa_injector'
+66275 INFO: Processing module hooks (post-graph stage)...
+67599 INFO: Processing standard module hook 'hook-PIL.SpiderImagePlugin.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\PyInstaller\\hooks'
+71462 INFO: Performing binary vs. data reclassification (1582 entries)
+72039 INFO: Looking for ctypes DLLs
+72219 INFO: Analyzing run-time hooks ...
+72233 INFO: Including run-time hook 'pyi_rth_inspect.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\PyInstaller\\hooks\\rthooks'
+72241 INFO: Including run-time hook 'pyi_rth_pkgutil.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\PyInstaller\\hooks\\rthooks'
+72244 INFO: Including run-time hook 'pyi_rth_multiprocessing.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\PyInstaller\\hooks\\rthooks'
+72248 INFO: Including run-time hook 'pyi_rth_cryptography_openssl.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\_pyinstaller_hooks_contrib\\rthooks'
+72249 INFO: Including run-time hook 'pyi_rth_setuptools.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\PyInstaller\\hooks\\rthooks'
+72251 INFO: Including run-time hook 'pyi_rth_pkgres.py' from 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\PyInstaller\\hooks\\rthooks'
+72353 INFO: Creating base_library.zip...
+72389 INFO: Looking for dynamic libraries
+C:\Users\PLAPA-22\AppData\Roaming\Python\Python313\site-packages\PyInstaller\building\build_main.py:227: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  __import__(package)
+76826 INFO: Extra DLL search directories (AddDllDirectory): ['C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\pyarrow.libs', 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\numpy.libs', 'C:\\Users\\PLAPA-22\\AppData\\Roaming\\Python\\Python313\\site-packages\\pandas.libs']
+76826 INFO: Extra DLL search directories (PATH): []
+78823 INFO: Warnings written to D:\Gaurave_07.08.2025\Gaurav\Automation\Behave-Runner\build\behave_runner\warn-behave_runner.txt
+79092 INFO: Graph cross-reference written to D:\Gaurave_07.08.2025\Gaurav\Automation\Behave-Runner\build\behave_runner\xref-behave_runner.html
+79234 INFO: checking PYZ
+79234 INFO: Building PYZ because PYZ-00.toc is non existent
+79234 INFO: Building PYZ (ZlibArchive) D:\Gaurave_07.08.2025\Gaurav\Automation\Behave-Runner\build\behave_runner\PYZ-00.pyz
+82395 INFO: Building PYZ (ZlibArchive) D:\Gaurave_07.08.2025\Gaurav\Automation\Behave-Runner\build\behave_runner\PYZ-00.pyz completed successfully.
+82468 INFO: checking PKG
+82469 INFO: Building PKG because PKG-00.toc is non existent
+82469 INFO: Building PKG (CArchive) behave_runner.pkg
+82520 INFO: Building PKG (CArchive) behave_runner.pkg completed successfully.
+82522 INFO: Bootloader C:\Users\PLAPA-22\AppData\Roaming\Python\Python313\site-packages\PyInstaller\bootloader\Windows-64bit-intel\run.exe
+82522 INFO: checking EXE
+82522 INFO: Building EXE because EXE-00.toc is non existent
+82522 INFO: Building EXE from EXE-00.toc
+82522 INFO: Copying bootloader EXE to D:\Gaurave_07.08.2025\Gaurav\Automation\Behave-Runner\build\behave_runner\behave_runner.exe
+82595 INFO: Copying icon to EXE
+82647 INFO: Copying 0 resources to EXE
+82647 INFO: Embedding manifest in EXE
+82699 INFO: Appending PKG archive to EXE
+82910 INFO: Fixing EXE headers
+85804 INFO: Building EXE from EXE-00.toc completed successfully.
+85824 INFO: checking COLLECT
+85825 INFO: Building COLLECT because COLLECT-00.toc is non existent
+85825 INFO: Building COLLECT COLLECT-00.toc
+92995 INFO: Building COLLECT COLLECT-00.toc completed successfully.
+93556 INFO: Build complete! The results are available in: D:\Gaurave_07.08.2025\Gaurav\Automation\Behave-Runner\dist
