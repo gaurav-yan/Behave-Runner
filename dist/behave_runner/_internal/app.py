@@ -264,6 +264,7 @@ def page_execution_run():
                 st.session_state.caps_files = c
                 st.session_state.unique_tags = t
                 st.session_state.scan_done = True
+                st.session_state.proj_path = project_path_input  # Persist manual entry
                 st.toast("Scan Complete", icon="✅")
                 with st.spinner("Scanning..."):
                     time.sleep(1)
